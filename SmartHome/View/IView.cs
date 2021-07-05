@@ -10,7 +10,7 @@ namespace SmartHome.View
     {
         string setIsOn { set; }
         string setIsMovementSensorOn { set; }
-
-        string setBoilerTemperature { set;  }
+        string setBoilerTemperature { set; }
+        string setWindowBlindStep { set; }
     }
 }

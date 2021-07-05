@@ -6,7 +6,8 @@ namespace SmartHome.Models.DeviceFactory
     enum DeviceType{
         Camera,
         Boiler,
-        TemperatureSensor
+        TemperatureSensor,
+        WindowBlind
     }
 
     class DevicesFactory
@@ -22,6 +23,8 @@ namespace SmartHome.Models.DeviceFactory
                     return new Boiler(name);
                case DeviceType.TemperatureSensor:
                      return new TemperatureSensor(name);
+                case DeviceType.WindowBlind:
+                    return new WindowBlind(name);
                 default:
                     return null;
             }

@@ -1,7 +1,10 @@
 ﻿using SmartHome.Models.DeviceFactory;
 using SmartHome.Models.Devices;
+using SmartHome.Models.Devices.IWindowBlind;
 using SmartHome.Models.RemoteController;
 using SmartHome.Models.RemoteController.BoilerCommands;
+using SmartHome.Models.RemoteController.ITemperatureSensor;
+using SmartHome.Models.RemoteController.WindowBlindCommands;
 using SmartHome.View;
 using System;
 
@@ -30,8 +33,11 @@ namespace SmartHome.Presenter
         private Device boiler_device;
         private Boiler boiler;
 
-        private Device temperatureSensorDevice;
+        private Device temperatureSensor_device;
         private TemperatureSensor temperatureSensor;
+
+        private Device windowBlind_Device;
+        private WindowBlind windowBlind;
 
         private RemoteController remoteController;
 
@@ -45,26 +51,32 @@ namespace SmartHome.Presenter
             boiler_device = factory.createDevice(DeviceType.Boiler, "Котёл №1");
             boiler = (Boiler)boiler_device;
 
-            temperatureSensorDevice = factory.createDevice(DeviceType.TemperatureSensor, "Датчик температуры №1");
-            temperatureSensor = (TemperatureSensor)temperatureSensorDevice;
+            temperatureSensor_device = factory.createDevice(DeviceType.TemperatureSensor, "Датчик температуры №1");
+            temperatureSensor = (TemperatureSensor)temperatureSensor_device;
 
-            ICommand turnOnCamera = new TurnOnDevice(camera);
-            ICommand turnOffCamera = new TurnOffDevice(camera);
+            windowBlind_Device = factory.createDevice(DeviceType.WindowBlind, "Котёл №1");
+            windowBlind = (WindowBlind)windowBlind_Device;
+
+            ICommand turnOnCamera = new TurnCameraOn(camera);
+            ICommand turnOffCamera = new TurnCameraOff(camera);
             ICommand turnOnMovementSensor = new TurnOnMovementSensor(camera);
             ICommand turnOffMovementSensor = new TurnOffMovementSensor(camera);
 
-            ICommand turnOnBoiler = new TurnOnDevice(boiler);
-            ICommand turnOffBoiler = new TurnOffDevice(boiler);
+            ICommand turnOnBoiler = new TurnBoilerOn(boiler);
+            ICommand turnOffBoiler = new TurnBoilerOff(boiler);
             ICommand increaseTemperatureByOne = new IncreaseTemperatureByOne(boiler);
             ICommand decreaseTemperatureByOne = new DecreaseTemperatureByOne(boiler);
             ICommand setTemperatureToDefault = new SetTemperatureToDefault(boiler);
 
-            ICommand turnOnTemperatureSensor = new TurnOnDevice(temperatureSensor);
-            ICommand turnOffTemperatureSensor = new TurnOffDevice(temperatureSensor);
+            ICommand turnOnTemperatureSensor = new TurnTemperatureSensorOn(temperatureSensor);
+            ICommand turnOffTemperatureSensor = new TurnTemperatureSensorOff(temperatureSensor);
+
+            ICommand windowBlinndOneStepAhead = new WindowBlindOneStepAhead(windowBlind);
+            ICommand windowBlinndOneStepBack = new WindowBlindOneStepBack(windowBlind);
 
             remoteController = new RemoteController(turnOnCamera, turnOffCamera, turnOnMovementSensor, turnOffMovementSensor,
                 turnOnBoiler, turnOffBoiler, increaseTemperatureByOne, decreaseTemperatureByOne, turnOnTemperatureSensor,
-                turnOffTemperatureSensor, setTemperatureToDefault);
+                turnOffTemperatureSensor, setTemperatureToDefault, windowBlinndOneStepAhead, windowBlinndOneStepBack);
 
         }
         public static SmartHomePresenter getPresenterInstance(SmartHomePresenter presenter, IView view)
@@ -88,10 +100,11 @@ namespace SmartHome.Presenter
 
         public void turnBoilerOn()
         {
-            if (!boiler._isOn) {
+            if (!boiler._isOn)
+            {
                 remoteController.TurnOnBoiler();
-            setTemperatureToDefault();
-            _view.setIsOn = BOILER_IS_ON;
+                setTemperatureToDefault();
+                _view.setIsOn = BOILER_IS_ON;
             }
         }
 
@@ -103,9 +116,9 @@ namespace SmartHome.Presenter
             _view.setIsOn = BOILER_IS_OFF;
         }
 
-        public void TurnMovementSensorOn()
+        public void TurnMovementSensor()
         {
-            if ((camera._isSensorMovementOn) || (!camera._isOn))
+            if (camera._isSensorMovementOn || !camera._isOn)
             {
                 remoteController.TurnOffSensorMovement();
                 _view.setIsMovementSensorOn = SENSOR_MOVEMENT_IS_OFF;
@@ -115,6 +128,19 @@ namespace SmartHome.Presenter
                 remoteController.TurnOnSensorMovement();
                 _view.setIsMovementSensorOn = SENSOR_MOVEMENT_IS_ON;
             }
+        }
+
+        public void TurnOnTemperatureSensor()
+        {
+
+            remoteController.TurnOnTemperatureSensor();
+            _view.setIsOn = SENSOR_TEMPERATURE_IS_ON;
+        }
+
+        public void TurnOffTemperatureSensor()
+        {
+            remoteController.TurnOffTemperatureSensor();
+            _view.setIsOn = SENSOR_TEMPERATURE_IS_OFF;
         }
 
         public void increseBoilerTemperatureByOne()
@@ -135,19 +161,15 @@ namespace SmartHome.Presenter
             remoteController.SetTemperatureByDefault();
         }
 
-        public void TurnOnTemperatureSensor()
+        public void windowBlindOneStepAhead()
         {
-
-            remoteController.TurnOnTemperatureSensor();
-            _view.setIsOn = SENSOR_TEMPERATURE_IS_ON;
+            remoteController.WindowBlindOneStepAhead();
         }
 
-        public void TurnOffTemperatureSensor()
+        public void windowBlindOneStepBack()
         {
-            remoteController.TurnOffTemperatureSensor();
-            _view.setIsOn = SENSOR_TEMPERATURE_IS_OFF;
+            remoteController.WindowBlindOneStepBack();
         }
-
 
         public void identifyCameraState()
         {
@@ -183,6 +205,11 @@ namespace SmartHome.Presenter
             {
                 _view.setIsOn = SENSOR_TEMPERATURE_IS_OFF;
             }
+        }
+
+        public void identifyWindowBlindState()
+        {
+            _view.setWindowBlindStep = windowBlind.currentStep.ToString();
         }
 
     }

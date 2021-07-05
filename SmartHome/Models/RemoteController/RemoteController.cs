@@ -17,10 +17,14 @@ namespace SmartHome.Models.RemoteController
         public ICommand _turnOnTemperatureSensor;
         public ICommand _turnOffTemperatureSensor;
 
+        public ICommand _windowBlindOneStepAhead;
+        public ICommand _windowBlindOneStepBack;
+
         public RemoteController(ICommand turnOnCamera, ICommand turnOffCamera, ICommand turnOnMovementSensor,
             ICommand turnOffMovementSensor, ICommand turnOnBoiler, ICommand turnOffBoiler,
             ICommand increaseTemperatureByOne, ICommand decreaseTemperatureByOne, ICommand turnOnTemperatureSensor,
-            ICommand turnOffTemperatureSensor, ICommand setTemperatureToDefault)
+            ICommand turnOffTemperatureSensor, ICommand setTemperatureToDefault,
+            ICommand windowBlindoneStepAhed, ICommand windoWBlindOneStepBack)
         {
             _turnOnCamera = turnOnCamera;
             _turnOffCamera = turnOffCamera;
@@ -35,6 +39,9 @@ namespace SmartHome.Models.RemoteController
 
             _turnOnTemperatureSensor = turnOnTemperatureSensor;
             _turnOffTemperatureSensor = turnOffTemperatureSensor;
+
+            _windowBlindOneStepAhead = windowBlindoneStepAhed;
+            _windowBlindOneStepBack = windoWBlindOneStepBack;
         }
 
         public void TurnOnCamera()
@@ -95,7 +102,15 @@ namespace SmartHome.Models.RemoteController
             _turnOffTemperatureSensor.execute();
         }
 
+        public void WindowBlindOneStepAhead()
+        {
+            _windowBlindOneStepAhead.execute();
+        }
 
+        public void WindowBlindOneStepBack()
+        {
+            _windowBlindOneStepBack.execute();
+        }
 
     }
 }

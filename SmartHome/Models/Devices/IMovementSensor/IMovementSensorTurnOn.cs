@@ -1,4 +1,4 @@
-﻿namespace SmartHome.Models.Devices.ITemperature
+﻿namespace SmartHome.Models.Devices.MovementSensor
 {
     interface IMovementSensorTurnOn
     {

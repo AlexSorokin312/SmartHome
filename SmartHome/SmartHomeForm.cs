@@ -10,9 +10,9 @@ namespace SmartHome
         private SmartHomePresenter presenter;
 
         public string setIsOn { get => isOn.Text; set => isOn.Text = value; }
-        public string setIsMovementSensorOn { get => isMovementSensorOn.Text; set => isMovementSensorOn.Text = value; }
-        public string setBoilerTemperature { get => boilerTemperature.Text; set => boilerTemperature.Text = value; }
-
+        public string setIsMovementSensorOn { set => isMovementSensorOn.Text = value; }
+        public string setBoilerTemperature { set => boilerTemperature.Text = value; }
+        public string setWindowBlindStep { set => windowBlindStep.Text = value; }
 
         public SmartHomeForm()
         {
@@ -27,7 +27,7 @@ namespace SmartHome
         private void turnOffCamera_Click(object sender, EventArgs e)
         {
             presenter.TurnCameraOff();
-            presenter.TurnMovementSensorOn();
+            presenter.TurnMovementSensor();
         }
 
         private void turnOnBoiler_Click(object sender, EventArgs e)
@@ -46,7 +46,7 @@ namespace SmartHome
 
         private void movementSensor_Click(object sender, EventArgs e)
         {
-            presenter.TurnMovementSensorOn();
+            presenter.TurnMovementSensor();
         }
 
         public void btnIncreaseTemperatureByOneDegree_Click(object sender, EventArgs e)
@@ -70,12 +70,26 @@ namespace SmartHome
         {
             presenter.TurnOffTemperatureSensor();
         }
+
+        private void windowBlindOneStepAhead_Click(object sender, EventArgs e)
+        {
+            presenter.windowBlindOneStepAhead();
+            presenter.identifyWindowBlindState();
+        }
+
+        private void windowBlindOneStepBack_Click(object sender, EventArgs e)
+        {
+            presenter.windowBlindOneStepBack();
+            presenter.identifyWindowBlindState();
+        }
+
+
         private void btnCamera_Click(object sender, EventArgs e)
         {
             Remoter.Controls.Clear();
             DeviceState.Controls.Clear();
             if (presenter == null) presenter = new SmartHomePresenter(this);
-            
+
             presenter.identifyCameraState();
             presenter.identifyMevomentSensorState();
 
@@ -106,16 +120,12 @@ namespace SmartHome
             if (!DeviceState.Controls.Contains(isOn)) DeviceState.Controls.Add(isOn);
             isOn.AutoSize = true;
             isOn.Visible = true;
-            isOn.Location = new System.Drawing.Point(5, 26);
             isOn.Name = "isOn";
-            isOn.Size = new System.Drawing.Size(50, 20);
 
             if (!DeviceState.Controls.Contains(isMovementSensorOn)) DeviceState.Controls.Add(isMovementSensorOn);
             isMovementSensorOn.AutoSize = true;
             isMovementSensorOn.Visible = true;
-            isMovementSensorOn.Location = new System.Drawing.Point(5, 50);
             isMovementSensorOn.Name = "isMovementSensorOn";
-            isMovementSensorOn.Size = new System.Drawing.Size(50, 20);
         }
 
         private void btnBoiler_Click(object sender, EventArgs e)
@@ -123,10 +133,7 @@ namespace SmartHome
             Remoter.Controls.Clear();
             DeviceState.Controls.Clear();
             if (presenter == null) presenter = new SmartHomePresenter(this);
-
             presenter.identifyBoilerState();
-
-            Remoter.Controls.Clear();
             DeviceState.Controls.Clear();
 
             Button TurnOn = new Button();
@@ -164,9 +171,7 @@ namespace SmartHome
             if (!DeviceState.Controls.Contains(isOn)) DeviceState.Controls.Add(isOn);
             isOn.AutoSize = true;
             isOn.Visible = true;
-            isOn.Location = new System.Drawing.Point(5, 26);
             isOn.Name = "isOn";
-            isOn.Size = new System.Drawing.Size(50, 20);
 
             if (!DeviceState.Controls.Contains(boilerTemperature)) DeviceState.Controls.Add(boilerTemperature);
             boilerTemperature.AutoSize = true;
@@ -203,9 +208,35 @@ namespace SmartHome
             if (!DeviceState.Controls.Contains(isOn)) DeviceState.Controls.Add(isOn);
             isOn.AutoSize = true;
             isOn.Visible = true;
-            isOn.Location = new System.Drawing.Point(5, 26);
             isOn.Name = "isOn";
-            isOn.Size = new System.Drawing.Size(50, 20);
+        }
+
+        private void WindowBlind_Click(object sender, EventArgs e)
+        {
+            Remoter.Controls.Clear();
+            DeviceState.Controls.Clear();
+            if (presenter == null) presenter = new SmartHomePresenter(this);
+            presenter.identifyWindowBlindState();
+            DeviceState.Controls.Clear();
+
+            Button OneStepAhead = new Button();
+            Remoter.Controls.Add(OneStepAhead);
+            OneStepAhead.Location = new System.Drawing.Point(5, 20);
+            OneStepAhead.Name = "StepAhead";
+            OneStepAhead.Size = new System.Drawing.Size(238, 42);
+            OneStepAhead.Text = "Шаг вперёд";
+            OneStepAhead.Click += new EventHandler(windowBlindOneStepAhead_Click);
+
+            Button OneStepBack = new Button();
+            Remoter.Controls.Add(OneStepBack);
+            OneStepBack.Location = new System.Drawing.Point(5, 70);
+            OneStepBack.Name = "StepBack";
+            OneStepBack.Size = new System.Drawing.Size(238, 42);
+            OneStepBack.Text = "Шаг назад";
+            OneStepBack.Click += new EventHandler(windowBlindOneStepBack_Click);
+
+            if (!DeviceState.Controls.Contains(windowBlindStep)) DeviceState.Controls.Add(windowBlindStep);
+            windowBlindStep.Visible = true;
         }
     }
 }
